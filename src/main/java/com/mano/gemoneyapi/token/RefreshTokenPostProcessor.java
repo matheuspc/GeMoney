@@ -1,5 +1,7 @@
 package com.mano.gemoneyapi.token;
 
+import com.mano.gemoneyapi.config.property.GeMoneyApiProperty;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -40,10 +42,13 @@ public class RefreshTokenPostProcessor implements ResponseBodyAdvice<OAuth2Acces
         return body;
     }
 
+    @Autowired
+    private GeMoneyApiProperty geMoneyApiProperty;
+
     private void adicionarRefreshTokenCookie(String refreshToken, HttpServletRequest req, HttpServletResponse resp) {
         Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
         refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setSecure(false); //TODO: migrar para true em produção
+        refreshTokenCookie.setSecure(geMoneyApiProperty.getSeguranca().isEnableHttps());
         refreshTokenCookie.setPath(req.getContextPath() + "/oauth/token");
         refreshTokenCookie.setMaxAge(30);
         resp.addCookie(refreshTokenCookie);

@@ -1,5 +1,8 @@
 package com.mano.gemoneyapi.resource;
 
+import com.mano.gemoneyapi.GemoneyApiApplication;
+import com.mano.gemoneyapi.config.property.GeMoneyApiProperty;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,11 +17,14 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping("/tokens")
 public class TokenResource {
 
+    @Autowired
+    private GeMoneyApiProperty geMoneyApiProperty;
+
     @DeleteMapping("/revoke")
     public void revoke(HttpServletRequest req, HttpServletResponse resp) {
         Cookie cookie = new Cookie("refreshToken", null);
         cookie.setHttpOnly(true);
-        cookie.setSecure(false); //TODO: Em produção será true
+        cookie.setSecure(geMoneyApiProperty.getSeguranca().isEnableHttps());
         cookie.setPath(req.getContextPath() + "/oauth/token");
         cookie.setMaxAge(0);
 
